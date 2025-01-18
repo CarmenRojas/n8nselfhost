@@ -1,0 +1,18 @@
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--log.level=DEBUG"  # Enables detailed logging for debugging
+      - "--entryPoints.web.address=:8080"  # HTTP entry point
+      - "--entryPoints.websecure.address=:8443"  # HTTPS entry point
+      - "--providers.docker"  # Use Docker as the configuration provider
+      - "--certificatesResolvers.myresolver.acme.httpChallenge=true"  # Enable HTTP challenge for Let's Encrypt
+      - "--certificatesResolvers.myresolver.acme.httpChallenge.entryPoint=web"  # Use HTTP for the challenge
+      - "--certificatesResolvers.myresolver.acme.email=carmen@rojasconsulting.net"  # Email for Let's Encrypt
+      - "--certificatesResolvers.myresolver.acme.storage=/letsencrypt/acme.json"  # Where certificates are stored
+    ports:
+      - "8080:80"  # Maps HTTP traffic to port 8080
+      - "8443:443"  # Maps HTTPS traffic to port 8443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Needed for Traefik to interact with Docker
+      - ./letsencrypt:/letsencrypt  # Volume for storing Let's Encrypt certificates
+    restart: always  # Ensures the container restarts if it fails
